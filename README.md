@@ -59,6 +59,85 @@
 
 ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/af6c1d0a-c243-4b44-a42b-ea0ef23a8800)
 
+<hr>
 
+### 4️⃣ 데이터 예측
+ ##### 그럼 이제 다양한 회귀 모델을 사용해 치킨 값을 예측해 보겠습니다.
+ ####  ✔ LinearRegression
+   ```  
+  # 특성 선택
+  X = df_chicken['기준일'].dt.month.values.reshape(-1, 1)
+  y = df_chicken['물가동향'].values
+  
+  # 훈련 및 테스트 데이터 분리
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+  
+  # 회귀 모델 학습
+  model = LinearRegression()
+  model.fit(X_train, y_train)
+  
+  # 테스트 데이터에 대한 예측
+  y_pred = model.predict(X_test)
+  
+  # 평가
+  mse = mean_squared_error(y_test, y_pred)
+  rmse = np.sqrt(mse)
+  print(f'Root Mean Squared Error (RMSE): {rmse}')
+  
+  ```
+ #### 결과
+    RMSE : 843.232 
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/d54bad10-8704-443b-ac63-ff0dfa0cc59a)
 
+####  ✔ DecisionTreeRegressor
+  ```
+  # 특성 선택
+  X = df_chicken['기준일'].dt.month.values.reshape(-1, 1)
+  y = df_chicken['물가동향'].values
+  
+  # 훈련 및 테스트 데이터 분리
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+  
+  # 결정 트리 모델 학습
+  model = DecisionTreeRegressor(max_depth=3) 
+  model.fit(X_train, y_train)
+  
+  # 테스트 데이터에 대한 예측
+  y_pred = model.predict(X_test)
+  
+  # 평가
+  mse = mean_squared_error(y_test, y_pred)
+  # RMSE 계산 및 출력
+  rmse = np.sqrt(mse)
+  print(f'Root Mean Squared Error (RMSE): {rmse}')
+  ```
+  #### 결과
+    RMSE : 843.232 
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/510c1e96-d791-4397-a60f-b82504f16c3e)
+
+####  ✔ 트리 기반의 회귀 모델 [ SVR, AdaBoostRegressor, XGBRegressor, LGBMRegressor ] 및 K겹 교차 검증
+  ```
+    def get_model_cv_prediction(model, X_data, y_target):
+        neg_mse_scores = cross_val_score(model, X_data, y_target, 
+                                         scoring="neg_mean_squared_error", cv=7)
+        rmse_scores = np.sqrt(-1 * neg_mse_scores)
+        avg_rmse = np.mean(rmse_scores)
+        print('##### ', model.__class__.__name__, ' #####')
+        print(' 7 교차 검증의 평균 RMSE : {0:.3f} '.format(avg_rmse))
+    
+    y_target = reg_df_chicken['물가동향']
+    X_data = reg_df_chicken[['Month']]
+    
+    lr_reg = LinearRegression()
+    svr_reg = SVR()
+    ada_reg = AdaBoostRegressor()
+    xgb_reg = XGBRegressor()
+    lgb_reg = LGBMRegressor()
+    
+    # 트리 기반의 회귀 모델을 반복하면서 평가 수행
+    models = [lr_reg, svr_reg, ada_reg, xgb_reg, lgb_reg]
+    for model in models:
+        get_model_cv_prediction(model, X_data, y_target)
+
+    ```
 
