@@ -112,7 +112,7 @@
   print(f'Root Mean Squared Error (RMSE): {rmse}')
   ```
   #### 결과
-    RMSE : 843.232 
+    RMSE : 1196.7186
 ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/510c1e96-d791-4397-a60f-b82504f16c3e)
 
 ####  ✔ 트리 기반의 회귀 모델 [ SVR, AdaBoostRegressor, XGBRegressor, LGBMRegressor ] 및 K겹 교차 검증
