@@ -22,7 +22,7 @@
 
 2023년 4월에는 소고기 물가의 큰 변동은 없었으며 **2023년 8월** 에 큰 폭으로 하락이 있었습니다.
 
-![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/8eb49640-eb5f-40ae-a851-048060825bbc)
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/dd3149a6-61d3-4b57-990f-ce6ef4a33763)
 
 <hr>
 
@@ -39,12 +39,12 @@
 이 중 물가 상승률이 가장 큰 항목은 **2023-5월** 의 갈치가 **0.44%** 로 가장 큰 전년대비 상승폭을 보여줬습니다.  
 물가 상승률이 가장 적은 항목은 **2023년-5월** 동태로 **0.17%** 하락 하였습니다. 
 
-![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/55f7150d-6896-45d6-8bde-a63a74ef9d1d)
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/7a612f42-d9a8-4ce9-9c80-580c67a8956d)
 
 <hr>
 
 다음으로 국민 음식 **치킨**을 살펴볼까요 ?
-![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/fd5fe0f6-45b9-4a54-bbef-5583de51cac8)
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/9f3846ae-fa29-4fb8-b039-c0e9b6dbfe59)
 
 <hr>
 
