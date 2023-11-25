@@ -61,7 +61,7 @@
 <hr>
 
 ### 4️⃣ 네이버 API 크롤링
- **크롤링**을 통해 **치킨 물가**에 대한 기사를 좀 더 분석해 보겠습니다.  
+ **크롤링**을 통해 **수원시 물가**에 대한 기사를 좀 더 분석해 보겠습니다.  
   > ### 1. 프로그램 구성 설계하기
     def main()
 
@@ -162,6 +162,10 @@
   ### 크롤링 데이터 확인
   ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/639f10fb-3a6c-44ae-bb97-1691abcc9310)
 
+
+> ### 2. 워드 클라우딩
+  구름 모양 워크 클라우드를 만들었습니다.  
+  <img src="https://github.com/chanho0908/2023_BigData_Project/assets/84930748/1c11ecf9-ddde-45c6-a8ae-a098fb6027fe" width="400"/><img src="https://github.com/chanho0908/2023_BigData_Project/assets/84930748/f39412c5-9b18-4576-ae26-2f45ee9d5867" width="400"/>
 
 <hr>
 
