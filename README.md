@@ -86,8 +86,9 @@
   
   ```
  #### 결과
-    RMSE : 843.232 
-![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/d54bad10-8704-443b-ac63-ff0dfa0cc59a)
+    RMSE : 300.550
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/90a08b8a-f9d4-4f9d-a167-549cd62c0d24)
+
 
 ####  ✔ DecisionTreeRegressor
   ```
@@ -112,8 +113,9 @@
   print(f'Root Mean Squared Error (RMSE): {rmse}')
   ```
   #### 결과
-    RMSE : 1196.7186
-![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/510c1e96-d791-4397-a60f-b82504f16c3e)
+    RMSE : 394.1763
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/5bdcb536-1660-44b1-8136-539420631edf)
+
 
 ####  ✔ 트리 기반의 회귀 모델 [ SVR, AdaBoostRegressor, XGBRegressor, LGBMRegressor ] 및 K겹 교차 검증
   ```
@@ -128,16 +130,20 @@
     y_target = reg_df_chicken['물가동향']
     X_data = reg_df_chicken[['Month']]
     
-    lr_reg = LinearRegression()
-    svr_reg = SVR()
     ada_reg = AdaBoostRegressor()
     xgb_reg = XGBRegressor()
-    lgb_reg = LGBMRegressor()
     
     # 트리 기반의 회귀 모델을 반복하면서 평가 수행
-    models = [lr_reg, svr_reg, ada_reg, xgb_reg, lgb_reg]
+    models = [ada_reg, xgb_reg]
     for model in models:
         get_model_cv_prediction(model, X_data, y_target)
+  ```
+    
+   #### 결과
+    #####  AdaBoostRegressor  #####
+    7 교차 검증의 평균 RMSE : 826.094 
+    #####  XGBRegressor  #####
+    7 교차 검증의 평균 RMSE : 855.070 
 
-    ```
+    ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/4ff885b6-18db-4906-8fc0-3393fc53931b)
 
