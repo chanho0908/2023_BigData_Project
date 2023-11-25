@@ -39,7 +39,8 @@
    이 중 물가 상승률이 가장 큰 항목은 **2023-5월** 의 갈치가 **0.44%** 로 가장 큰 전년대비 상승폭을 보여줬습니다.  
    물가 상승률이 가장 적은 항목은 **2023년-5월** 동태로 **0.17%** 하락 하였습니다. 
 
-![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/7a612f42-d9a8-4ce9-9c80-580c67a8956d)
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/b3a51436-e912-482e-a874-94e5c5689562)
+
 
 <hr>
 
