@@ -60,7 +60,112 @@
 
 <hr>
 
-### 4️⃣ 데이터 예측
+### 4️⃣ 네이버 API 크롤링
+ **크롤링**을 통해 **치킨 물가**에 대한 기사를 좀 더 분석해 보겠습니다.  
+  > ### 1. 프로그램 구성 설계하기
+    def main()
+
+    1. 검색어 지정
+    
+    2. 네이버 뉴스 검색
+    
+    3. 응답 데이터 정리 후 리스트에 저장
+    
+    4. 리스트를 JSON 파일로 저장
+
+  ```
+  #1. 검색어 지정
+  def getRequestUrl(url):
+    req = urllib.request.Request(url) # 매개변수로 받은 url에 대한 요청을 보낼 객체를 생성
+    req.add_header("X-Naver-Client-Id", client_id) # API를 사용하기 위한 Client ID와 Client Secret 코드를 요청 객체 헤드에 추가
+    req.add_header("X-Naver-Client-Secret", client_secret)
+
+    try:
+        response = urllib.request.urlopen(req) # 요청 객체를 보내고 그에 대한 응답을 받아 response 객체에 저장
+        if response.getcode() == 200: # 정상 처리
+            print ("[%s] Url Request Success" % datetime.datetime.now()) # 정상 처리 메시지 출력
+            return response.read().decode('utf-8') # utf-8 형식으로 디코딩 후 반환
+    except Exception as e:
+        print(e)
+        print("[%s] Error for URL : %s" % (datetime.datetime.now(), url))
+        return None
+  ```
+```
+  # 2. 네이버 뉴스 검색
+    #[CODE 2]
+    def getNaverSearch(node, srcText, start, display):
+      base = "https://openapi.naver.com/v1/search" 
+      node = "/%s.json" % node
+      parameters = "?query=%s&start=%s&display=%s" % (urllib.parse.quote(srcText), start, display)
+  
+      url = base + node + parameters # 네이버 검색 API 정보에 따라 요청 URL을 구성
+      responseDecode = getRequestUrl(url)   #[CODE 1]
+  
+      if (responseDecode == None):
+          return None
+      else:
+          return json.loads(responseDecode) # 서버에서 받은 JSON 형태의 응답 객체를 파이썬 객체로 로드하여 반환
+```
+
+```
+    # 3. 응답 데이터 정리 후 리스트에 저장
+    #[CODE 3]
+    def getPostData(post, jsonResult, cnt):
+        # 검색 결과가 들어 있는 post 객체에서 필요한 데이터 항목을 추출하여 변수에 저장
+        title = post['title']
+        description = post['description']
+        org_link = post['originallink']
+        link = post['link']
+    
+        pDate = datetime.datetime.strptime(post['pubDate'],  '%a, %d %b %Y %H:%M:%S +0900')
+        pDate = pDate.strftime('%Y-%m-%d %H:%M:%S') # 날짜를 '연-월-일 시:분:초' 형식으로 나타낸다.
+
+        # 데이터를 딕셔너리로 구성하여 리스트 객체인 jsonResult에 추가
+        jsonResult.append({'cnt':cnt, 'title':title, 'description': description,
+        'org_link':org_link,   'link': org_link,   'pDate':pDate})
+            return
+```
+
+```
+  # 4. 데이터를 JSON으로 저장
+   #[CODE 0]
+    def main():
+        node = 'news'   # 크롤링 할 대상
+        srcText = input('검색어를 입력하세요: ')
+        cnt = 0
+        jsonResult = []
+    
+        jsonResponse = getNaverSearch(node, srcText, 1, 100)  #[CODE 2]
+        total = jsonResponse['total']
+    
+        while ((jsonResponse != None) and (jsonResponse['display'] != 0)):
+            for post in jsonResponse['items']:
+                cnt += 1
+                getPostData(post, jsonResult, cnt)  #[CODE 3]
+    
+            start = jsonResponse['start'] + jsonResponse['display']
+            jsonResponse = getNaverSearch(node, srcText, start, 100)  #[CODE 2]
+    
+        print('전체 검색 : %d 건' %total)
+    
+        with open('%s_naver_%s.json' % (srcText, node), 'w', encoding='utf8') as outfile:
+            jsonFile = json.dumps(jsonResult,  indent=4, sort_keys=True,  ensure_ascii=False)
+    
+            outfile.write(jsonFile)
+    
+        print("가져온 데이터 : %d 건" %(cnt))
+        print ('%s_naver_%s.json SAVED' % (srcText, node))
+    
+    if __name__ == '__main__':
+        main()
+```
+  ### 크롤링 데이터 확인
+  ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/639f10fb-3a6c-44ae-bb97-1691abcc9310)
+
+
+<hr>
+
+### 5️⃣ 데이터 예측
  ##### 그럼 이제 다양한 회귀 모델을 사용해 치킨 값을 예측해 보겠습니다.
  ####  ✔ LinearRegression
    ```  
