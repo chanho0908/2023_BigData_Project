@@ -22,7 +22,7 @@ firstDataFrame = pd.concat(dfs, ignore_index=True)
 # 필요없는 열 삭제
 firstDataFrame.drop(['데이터기준일자', '규격 및 단위'], axis=1, inplace=True)
 ````
-#### **2. Json에서 값이 ""일 경우 판다스는 누락된 값이 아닌 빈 문자열로 처리하기 때문에 물가동향 열에서 빈 문자열을 NaN으로 변환하고 행을 삭제합니다.**
+#### **2. Json에서 값이 ""일 경우 판다스는 누락된 값이 아닌 빈 문자열로 처리하기 때문에 물가동향 열에서 결측치를 NaN으로 변환하고 행을 삭제합니다.**
 ```
 # Json에서 값이 ""일 경우 판다스는 누락된 값이 아닌 빈 문자열로 처리
 # 물가동향 열에서 빈 문자열을 NaN으로 변환
@@ -35,7 +35,7 @@ firstDataFrame['물가동향'] = pd.to_numeric(firstDataFrame['물가동향'], e
 df_natnan = firstDataFrame.dropna(subset=['물가동향'])
 ```
 
-#### **3. 물가 동향의 값이 빈 경우에도 제거해 줍니다.**
+#### **3. 물가 동향의 결측치도 제거해 줍니다.**
 ```
 # 물가 동향의 값이 빈 경우 확인
 no_values_count = df_natnan['물가동향'].isna().sum()
@@ -63,18 +63,37 @@ mainDataFrame = df_natnan.loc[grouped_df]
 mainDataFrame
 
 ```
+![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/3483ddac-0a06-48be-b47e-fa217afcae85)
+
+
 
 ### 3️⃣ 데이터 분석
 
-* 한국인이라면 누구나 사랑하는 K-Food 한식의 전월 대비 물가 상승률을 한번 살펴보겠습니다.  
-가장 높은 상승률을 보여준 품목은 **등심구이**로 **2023년 4월**에 무려 **18.6%** 나 상승했네요!  
+* 한국인이라면 누구나 사랑하는 K-Food 한식의 전월 대비 물가 상승률을 한번 살펴보겠습니다.   
+```
+# 한식만 추출
+korean_food = mainDataFrame[mainDataFrame['구분'].str.contains('한식')].copy()
+k_food_list = korean_food['품목'].drop_duplicates().tolist()
+df_kfood = mainDataFrame[mainDataFrame['품목'].isin(k_food_list)]
+
+# DataFrame을 '품목' 컬럼으로 그룹핑 하고, '물가동향' 컬럼에 12개월(12개월, 즉 1년을 나타냄)
+# 로 df_kfood 변화율( ) 함수를 적용하여 전년 대비 인플레이션을 계산
+df_kfood['전년동월대비'] = df_kfood.groupby('품목')['물가동향'].pct_change(periods=12)
+df_kfood.dropna(inplace=True)
+```
+* 가장 높은 상승률을 보여준 품목은 **등심구이**로 **2023년 4월**에 무려 **18.6%** 나 상승했네요!  
 
 ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/fe71d851-4631-467f-9928-841db646a895)
 
 <hr>
 
 * 그렇다면 원자재인 소고기 물가에서도 큰 상승이 일어났을까요? 🤔
-
+  ```
+    # 2023년 쇠고기 품목만 추출
+    df_beef = mainDataFrame[mainDataFrame['품목'] == '쇠고기']
+    df_beef = df_beef[df_beef['기준일'].str.contains('2023')]
+    df_beef['전년동월대비'] = df_beef['물가동향']
+  ```  
   2023년 4월에는 소고기 물가의 큰 변동은 없었으며 **2023년 8월** 에 큰 폭으로 하락이 있었습니다.
 
 ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/dd3149a6-61d3-4b57-990f-ce6ef4a33763)
@@ -82,7 +101,18 @@ mainDataFrame
 <hr>
 
 * **소고기**를 사용하는 음식점의 물가를 살펴볼까요 ?  
-  준비된 데이터에서 소고기를 사용하는 음식은 갈비탕, 불고기, 설렁탕이 있습니다.  
+  준비된 데이터에서 소고기를 사용하는 음식은 갈비탕, 불고기, 설렁탕이 있습니다.
+  ```
+    df_beef = mainDataFrame[mainDataFrame['품목'] == '쇠고기']
+    df_use_beef_items = ['갈비탕', '불고기', '설렁탕']
+    
+    # 품목이 df_use_beef_items에 있는 데이터만 필터링
+    df_selected_beef_items = mainDataFrame[mainDataFrame['품목'].isin(df_use_beef_items)].copy()
+    
+    # 전년동월대비 물가 상승률 계산
+    df_selected_beef_items['전년동월대비'] = df_selected_beef_items.groupby('품목')['물가동향'].pct_change(periods=12)
+    df_selected_beef_items.dropna(inplace=True)
+  ```
   세가지 품목 모두 공통된 특징이 있는데 **소고기의 가격의 큰 하락이 있던 8월에 동시에 물가 하락**이 있었습니다.
 
   😊 이를 바탕으로 원자재 값의 하락에 따른 관련 업종 음식의 물가 하락이 있었다고 예측 할 수 있겠죠 !
@@ -90,7 +120,25 @@ mainDataFrame
 
 <hr>
 
-🤔 다음으로는 **수산물**의 물가를 살펴보겠습니다. 수산물은 고등어, 갈치, 오징어, 동태가 있습니다.  
+🤔 다음으로는 **수산물**의 물가를 살펴보겠습니다. 수산물은 고등어, 갈치, 오징어, 동태가 있습니다.     
+```
+    df_seafood = mainDataFrame[mainDataFrame['구분'].str.contains('수산물')].copy()
+    seafood_list = df_seafood['품목'].drop_duplicates().tolist()
+    seafood = mainDataFrame[mainDataFrame['품목'].isin(seafood_list)]
+    
+    # '품목'을 기준으로 그룹화하고 '물가동향' 열에서 전년동월대비 물가 상승 지수 계산
+    df_seafood['전년동월대비'] = df_seafood.groupby('품목')['물가동향'].pct_change(periods=12)
+    df_seafood.dropna(inplace=True)
+    
+    # 결과 확인
+    # '고등어' 품목 선택
+    df_mackerel = df_seafood[df_seafood['품목'] == '고등어']
+    # '갈치' 품목 선택
+    df_cutlassfish = df_seafood[df_seafood['품목'] == '갈치']
+    # '동태' 품목 선택
+    df_dongtae = df_seafood[df_seafood['품목'] == '동태']
+    # '오징어' 품목 선택
+```
    이 중 물가 상승률이 가장 큰 항목은 **2023-5월** 의 갈치가 **0.44%** 로 가장 큰 전년대비 상승폭을 보여줬습니다.  
    물가 상승률이 가장 적은 항목은 **2023년-5월** 동태로 **0.17%** 하락 하였습니다. 
 
@@ -100,6 +148,17 @@ mainDataFrame
 <hr>
 
 🥠🥠 다음으로 국민 음식 **치킨**을 살펴볼까요 ? 🥠🥠
+```
+# 치킨 데이터만 분리
+df_chicken = mainDataFrame[mainDataFrame['품목'] == '치킨'].copy()
+
+# 전년도 동월 가격과 비교
+df_chicken['전년동월대비'] = df_chicken['물가동향'].pct_change(periods=12)
+df_chicken.dropna(inplace=True)
+
+# 시각화할 데이터만 분리
+df_chicken = df_chicken[['기준일', '전년동월대비']]
+```
 ![image](https://github.com/chanho0908/2023_BigData_Project/assets/84930748/9f3846ae-fa29-4fb8-b039-c0e9b6dbfe59)
 
 <hr>
@@ -220,7 +279,15 @@ mainDataFrame
 
 
 > ### 2. 워드 클라우딩
+```
+mask_path = 'cloud.png'
+cloud_mask = np.array(Image.open(mask_path)) # 구름 모양 워드 클라우드 생성
+
+wc = WordCloud(font_path, background_color='white', width=800, height=600, mask=cloud_mask, colormap='inferno')
+cloud=wc.generate_from_frequencies(word_count)
+```
   크롤링된 워드를 활용하여 구름 모양 워크 클라우드를 만들었습니다.  
+  
   <img src="https://github.com/chanho0908/2023_BigData_Project/assets/84930748/1c11ecf9-ddde-45c6-a8ae-a098fb6027fe" width="400"/><img src="https://github.com/chanho0908/2023_BigData_Project/assets/84930748/f39412c5-9b18-4576-ae26-2f45ee9d5867" width="400"/>
 
 <hr>
