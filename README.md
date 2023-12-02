@@ -1,13 +1,68 @@
 # 2023_BigData_Project
 
 ## ✅ Theme: 경기도 수원시의 최근 물가 동향을 분석해보자~
-### 1️⃣ Language & Libraries
+### Language & Libraries
 1. Python   
 2. pandas : 데이터 분석
 3. matplotlib & seaborn : 시각화
+4. 공공 데이터 포털 : https://www.data.go.kr/data/15010720/fileData.do
 
-### 2️⃣ 데이터 출처
-공공 데이터 포털 : https://www.data.go.kr/data/15010720/fileData.do
+## 1️⃣ 데이터 전처리
+#### **1. 데이터 프레임 리스트를 가져온 후 필요없는 열을 삭제합니다.**
+```
+# 데이터 프레임 리스트
+dfs = [
+    df_20220228, df_20220324, df_20220424, df_20220524, df_20220624, df_20220724, df_20220824, df_20220926, df_20221024, df_20221125,
+    df_20221227, df_20220125, df_20230228, df_20230328, df_20230428, df_20230526, df_20230626, df_20230726, df_20230825, df_20230926
+]
+
+# 데이터 프레임 합치기
+firstDataFrame = pd.concat(dfs, ignore_index=True)
+
+# 필요없는 열 삭제
+firstDataFrame.drop(['데이터기준일자', '규격 및 단위'], axis=1, inplace=True)
+````
+#### **2. Json에서 값이 ""일 경우 판다스는 누락된 값이 아닌 빈 문자열로 처리하기 때문에 물가동향 열에서 빈 문자열을 NaN으로 변환하고 행을 삭제합니다.**
+```
+# Json에서 값이 ""일 경우 판다스는 누락된 값이 아닌 빈 문자열로 처리
+# 물가동향 열에서 빈 문자열을 NaN으로 변환
+firstDataFrame['물가동향'].replace('', pd.NA, inplace=True)
+
+# 숫자로 변환이 불가능한 값은 NaN으로 처리
+firstDataFrame['물가동향'] = pd.to_numeric(firstDataFrame['물가동향'], errors='coerce')
+
+# NaN 값을 가진 행을 삭제
+df_natnan = firstDataFrame.dropna(subset=['물가동향'])
+```
+
+#### **3. 물가 동향의 값이 빈 경우에도 제거해 줍니다.**
+```
+# 물가 동향의 값이 빈 경우 확인
+no_values_count = df_natnan['물가동향'].isna().sum()
+#print('물가 동향의 값이 비어있는 경우: ', no_values_count)
+
+# 물가 동향의 값이 데이터 미존재인 경우 확인
+noData = (df_natnan['물가동향'] == '데이터미존재').sum()
+#print('물가 동향의 값이 데이터미존재인 경우: ', noData)
+
+```
+#### **4. 현재 데이터는 한 달 동안 한 가지 품목의 물가에 대해서 날짜에 따라 여러번 작성됨 한 달 동안 가장 높은 가격을 기록한 날만 남기고 나머지 데이터는 삭제.**
+
+```
+# 데이터프레임을 '기준일', '품목' 및 '물가동향' 열을 기준으로 그룹화
+# 각 그룹에 대해 '물가동향' 열에서 최대 값을 가지는 행을 선택
+grouped_df = df_natnan.groupby(['기준일', '품목'])['물가동향'].idxmax()
+
+# 선택한 행의 인덱스를 사용하여 원래 데이터프레임에서 해당 행을 추출하여 새로운 데이터프레임을 생성
+mainDataFrame = df_natnan.loc[grouped_df]
+
+#삭제된 행 확인
+#deleted_rows = mainDataFrame[~mainDataFrame.index.isin(filtered_df.index)]
+#deleted_rows
+
+mainDataFrame
+
+```
 
 ### 3️⃣ 데이터 분석
 
