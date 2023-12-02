@@ -165,7 +165,7 @@
 
 
 > ### 2. 워드 클라우딩
-  구름 모양 워크 클라우드를 만들었습니다.  
+  크롤링된 워드를 활용하여 구름 모양 워크 클라우드를 만들었습니다.  
   <img src="https://github.com/chanho0908/2023_BigData_Project/assets/84930748/1c11ecf9-ddde-45c6-a8ae-a098fb6027fe" width="400"/><img src="https://github.com/chanho0908/2023_BigData_Project/assets/84930748/f39412c5-9b18-4576-ae26-2f45ee9d5867" width="400"/>
 
 <hr>
