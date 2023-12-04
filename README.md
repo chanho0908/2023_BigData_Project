@@ -73,7 +73,9 @@ mainDataFrame
 ```
 # 한식만 추출
 korean_food = mainDataFrame[mainDataFrame['구분'].str.contains('한식')].copy()
+# 중복을 제거한 한식 품목 추출
 k_food_list = korean_food['품목'].drop_duplicates().tolist()
+# k_food_list에 저장된 리스트 저장
 df_kfood = mainDataFrame[mainDataFrame['품목'].isin(k_food_list)]
 
 # DataFrame을 '품목' 컬럼으로 그룹핑 하고, '물가동향' 컬럼에 12개월(12개월, 즉 1년을 나타냄)
